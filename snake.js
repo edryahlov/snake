@@ -3,7 +3,7 @@
 window.onload = function() {
     "use strict";
     
-    var version = 0.9;
+    var version = 1.0;
     document.getElementById("ver").innerHTML = '(ver. '+ version+')';
 
     var canvas = document.getElementById("game");
@@ -13,7 +13,9 @@ window.onload = function() {
     var blockSpacer = 2;
     var fieldSize = 20;
     var snakeLength = 5;
-    var rabbitsNumber = 10;
+    var startRabbitsNumber = 3;
+    var rabbitsNumber = startRabbitsNumber;
+    var lvl = 1;
     var moveDirection = 39; //39 - right by start
     var tickInterval = 500;
     
@@ -177,8 +179,13 @@ window.onload = function() {
         };
         this.check = function() {
             if (rabbitsNumber-1 === 0) {
-                alert("You eat all rabbits! :)");
-                location.reload();
+                //alert("You eat all rabbits! :)");
+                //location.reload();
+                lvl++;
+                document.getElementById("lvl").innerHTML = lvl;
+                rabbitsNumber = startRabbitsNumber*lvl;
+                rabbits.generate();
+                rabbits.draw();
             } else {
                 document.getElementById("rabbits_left").innerHTML = rabbitsNumber;
             }
