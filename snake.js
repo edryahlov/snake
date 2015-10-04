@@ -11,7 +11,7 @@ window.onload = function() {
 
     var blockSize = 15;
     var blockSpacer = 2;
-    var fieldSize = 40;
+    var fieldSize = 20;
     var snakeLength = 5;
     var rabbitsNumber = 20;
     
@@ -59,6 +59,7 @@ window.onload = function() {
         this.shift = function(direction) {
             
             var moveToX, moveToY, collide = false;
+            
             switch (direction) {
                 case 39: //right
                     moveToX = snakeCoordsX[0] + (blockSize + blockSpacer);
@@ -106,11 +107,19 @@ window.onload = function() {
                     break;
             }
             function checkCollide() {
-                for (var i=0; i<rabbitsPosX.length-1; i++) {
+                //self collide
+                for (var i=0; i<snakeCoordsX.length-1; i++) {
                     if (moveToX === snakeCoordsX[i] && moveToY === snakeCoordsY[i]) {
                         collide = true;
                         break;
                     }
+                }
+                //field collide
+                if (
+                    moveToX < 0 | moveToX > (fieldSize-1)*(blockSize+blockSpacer) |
+                    moveToY < 0 | moveToY > (fieldSize-1)*(blockSize+blockSpacer)
+                   ) {
+                    collide = true;
                 }
             }
             function eraseTail() {
