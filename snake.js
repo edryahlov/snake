@@ -3,7 +3,7 @@
 window.onload = function() {
     "use strict";
     
-    var version = 0.3;
+    var version = 0.9;
     document.getElementById("ver").innerHTML = '(ver. '+ version+')';
 
     var canvas = document.getElementById("game");
@@ -13,7 +13,9 @@ window.onload = function() {
     var blockSpacer = 2;
     var fieldSize = 20;
     var snakeLength = 5;
-    var rabbitsNumber = 20;
+    var rabbitsNumber = 10;
+    var moveDirection = 39; //39 - right by start
+    var tickInterval = 500;
     
     var snakeCoordsX = [], snakeCoordsY = [];
     var rabbitsPosX = [], rabbitsPosY = [];
@@ -22,16 +24,14 @@ window.onload = function() {
     canvas.width = (blockSize+blockSpacer)*fieldSize;
 
     document.onkeydown = function (event) {
-        snake.shift(event.keyCode);
+        moveDirection = event.keyCode;
+    };
+    
+    var timer = setInterval(function(){
+        snake.shift(moveDirection);
         snake.eat();
         rabbits.check();
-        //console.log(snakeLength);
-    };
-
-    //console.log(snakeCoordsX.join(', '));
-    //console.log(snakeCoordsY.join(', '));
-    //context.fillStyle = "red";
-    //context.clearRect(100, 100, blockSize, blockSize);
+    },tickInterval);
 
     var snake = new Snake();
     snake.start();
@@ -41,8 +41,13 @@ window.onload = function() {
     rabbits.generate();
     rabbits.draw();
 
+    function gameOver() {
+        alert("Game Over!");
+        location.reload();
+    }
+    
+    
     function Snake() {
-
         this.start = function() {
             for (var i=0; i<snakeLength; i++) {
                 snakeCoordsX[i] = (blockSize+blockSpacer)*(snakeLength-1)-((blockSize+blockSpacer)*i);
@@ -70,7 +75,8 @@ window.onload = function() {
                         shiftSnakeCoords();
                         snakeCoordsX[0] += blockSize + blockSpacer;
                         snake.draw();
-                    }
+                        moveDirection = 39;
+                    } else {gameOver();}
                     break;
                 case 37: //left
                     moveToX = snakeCoordsX[0] - (blockSize + blockSpacer);
@@ -81,7 +87,8 @@ window.onload = function() {
                         shiftSnakeCoords();
                         snakeCoordsX[0] -= blockSize + blockSpacer;
                         snake.draw();
-                    }
+                        moveDirection = 37;
+                    } else {gameOver();}
                     break;
                 case 40: //down
                     moveToX = snakeCoordsX[0];
@@ -92,7 +99,8 @@ window.onload = function() {
                         shiftSnakeCoords();
                         snakeCoordsY[0] += blockSize + blockSpacer;
                         snake.draw();
-                    }
+                        moveDirection = 40;
+                    } else {gameOver();}
                     break;
                 case 38: //up
                     moveToX = snakeCoordsX[0];
@@ -103,7 +111,8 @@ window.onload = function() {
                         shiftSnakeCoords();
                         snakeCoordsY[0] -= blockSize + blockSpacer;
                         snake.draw();
-                    }
+                        moveDirection = 38;
+                    } else {gameOver();}
                     break;
             }
             function checkCollide() {
@@ -158,7 +167,7 @@ window.onload = function() {
                     if (snakeCoordsX.indexOf(rabbitsPosX[i]) === -1 && snakeCoordsY.indexOf(rabbitsPosY[i]) === -1) {break;}
                 }
             }
-            document.getElementById("rabbits_left").innerHTML = rabbitsNumber-1;
+            document.getElementById("rabbits_left").innerHTML = rabbitsNumber;
         };
         this.draw = function() {
             for (var i=0; i<rabbitsPosX.length; i++) {
@@ -171,7 +180,7 @@ window.onload = function() {
                 alert("You eat all rabbits! :)");
                 location.reload();
             } else {
-                document.getElementById("rabbits_left").innerHTML = rabbitsNumber-1;
+                document.getElementById("rabbits_left").innerHTML = rabbitsNumber;
             }
         };
     }
