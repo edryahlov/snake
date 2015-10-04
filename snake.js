@@ -3,7 +3,7 @@
 window.onload = function() {
     "use strict";
     
-    var version = 0.2;
+    var version = 0.3;
     document.getElementById("ver").innerHTML = '(ver. '+ version+')';
 
     var canvas = document.getElementById("game");
@@ -57,32 +57,61 @@ window.onload = function() {
             }
         };
         this.shift = function(direction) {
-            var moveTo;
+            
+            var moveToX, moveToY, collide = false;
             switch (direction) {
                 case 39: //right
-                    eraseTail();
-                    shiftSnakeCoords();
-                    snakeCoordsX[0] += blockSize + blockSpacer;
-                    snake.draw();
+                    moveToX = snakeCoordsX[0] + (blockSize + blockSpacer);
+                    moveToY = snakeCoordsY[0];
+                    checkCollide();
+                    if (!collide) {
+                        eraseTail();
+                        shiftSnakeCoords();
+                        snakeCoordsX[0] += blockSize + blockSpacer;
+                        snake.draw();
+                    }
                     break;
                 case 37: //left
-                    eraseTail();
-                    shiftSnakeCoords();
-                    snakeCoordsX[0] -= blockSize + blockSpacer;
-                    snake.draw();
+                    moveToX = snakeCoordsX[0] - (blockSize + blockSpacer);
+                    moveToY = snakeCoordsY[0];
+                    checkCollide();
+                    if (!collide) {
+                        eraseTail();
+                        shiftSnakeCoords();
+                        snakeCoordsX[0] -= blockSize + blockSpacer;
+                        snake.draw();
+                    }
                     break;
                 case 40: //down
-                    eraseTail();
-                    shiftSnakeCoords();
-                    snakeCoordsY[0] += blockSize + blockSpacer;
-                    snake.draw();
+                    moveToX = snakeCoordsX[0];
+                    moveToY = snakeCoordsY[0] + (blockSize + blockSpacer);
+                    checkCollide();
+                    if (!collide) {
+                        eraseTail();
+                        shiftSnakeCoords();
+                        snakeCoordsY[0] += blockSize + blockSpacer;
+                        snake.draw();
+                    }
                     break;
                 case 38: //up
-                    eraseTail();
-                    shiftSnakeCoords();
-                    snakeCoordsY[0] -= blockSize + blockSpacer;
-                    snake.draw();
+                    moveToX = snakeCoordsX[0];
+                    moveToY = snakeCoordsY[0] - (blockSize + blockSpacer);
+                    checkCollide();
+                    if (!collide) {
+                        eraseTail();
+                        shiftSnakeCoords();
+                        snakeCoordsY[0] -= blockSize + blockSpacer;
+                        snake.draw();
+                    }
                     break;
+            }
+            function checkCollide() {
+                for (var i=0; i<rabbitsPosX.length-1; i++) {
+                    if (moveToX === snakeCoordsX[i] && moveToY === snakeCoordsY[i]) {
+                        collide = true;
+                        break;
+                    }
+                }
             }
             function eraseTail() {
                 var x = snakeCoordsX[snakeCoordsX.length-1];
