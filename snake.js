@@ -3,27 +3,28 @@
 window.onload = function() {
     "use strict";
     
-    var version = 1.0;
-    document.getElementById("ver").innerHTML = '(ver. '+ version+')';
-
+    var version = 1.1;
+    document.getElementById("ver").innerHTML = '(ver. '+ String(version)+')';
+    
     var canvas = document.getElementById("game");
     var context = canvas.getContext("2d");
 
     var blockSize = 15;
     var blockSpacer = 2;
+    var block = blockSize + blockSpacer;
     var fieldSize = 20;
     var snakeLength = 5;
     var startRabbitsNumber = 3;
     var rabbitsNumber = startRabbitsNumber;
     var lvl = 1;
     var moveDirection = 39; //39 - right by start
-    var tickInterval = 500;
+    var tickInterval = 200;
     
     var snakeCoordsX = [], snakeCoordsY = [];
     var rabbitsPosX = [], rabbitsPosY = [];
     
-    canvas.height = (blockSize+blockSpacer)*fieldSize;
-    canvas.width = (blockSize+blockSpacer)*fieldSize;
+    canvas.height = block * fieldSize;
+    canvas.width = block * fieldSize;
 
     document.onkeydown = function (event) {
         moveDirection = event.keyCode;
@@ -55,7 +56,6 @@ window.onload = function() {
                 snakeCoordsX[i] = (blockSize+blockSpacer)*(snakeLength-1)-((blockSize+blockSpacer)*i);
                 snakeCoordsY[i] = fieldSize/2*(blockSize+blockSpacer);
             }
-            //console.log(snakeCoordsX.join(', '));
         };
         this.draw = function() {
             for (var i=snakeCoordsX.length-1; i>=0; i--) {
@@ -67,55 +67,33 @@ window.onload = function() {
             
             var moveToX, moveToY, collide = false;
             
-            switch (direction) {
-                case 39: //right
-                    moveToX = snakeCoordsX[0] + (blockSize + blockSpacer);
-                    moveToY = snakeCoordsY[0];
-                    checkCollide();
-                    if (!collide) {
-                        eraseTail();
-                        shiftSnakeCoords();
-                        snakeCoordsX[0] += blockSize + blockSpacer;
-                        snake.draw();
-                        moveDirection = 39;
-                    } else {gameOver();}
-                    break;
-                case 37: //left
-                    moveToX = snakeCoordsX[0] - (blockSize + blockSpacer);
-                    moveToY = snakeCoordsY[0];
-                    checkCollide();
-                    if (!collide) {
-                        eraseTail();
-                        shiftSnakeCoords();
-                        snakeCoordsX[0] -= blockSize + blockSpacer;
-                        snake.draw();
-                        moveDirection = 37;
-                    } else {gameOver();}
-                    break;
-                case 40: //down
-                    moveToX = snakeCoordsX[0];
-                    moveToY = snakeCoordsY[0] + (blockSize + blockSpacer);
-                    checkCollide();
-                    if (!collide) {
-                        eraseTail();
-                        shiftSnakeCoords();
-                        snakeCoordsY[0] += blockSize + blockSpacer;
-                        snake.draw();
-                        moveDirection = 40;
-                    } else {gameOver();}
-                    break;
-                case 38: //up
-                    moveToX = snakeCoordsX[0];
-                    moveToY = snakeCoordsY[0] - (blockSize + blockSpacer);
-                    checkCollide();
-                    if (!collide) {
-                        eraseTail();
-                        shiftSnakeCoords();
-                        snakeCoordsY[0] -= blockSize + blockSpacer;
-                        snake.draw();
-                        moveDirection = 38;
-                    } else {gameOver();}
-                    break;
+            getNextSquare(direction);
+            checkCollide();
+            if (!collide) {
+                eraseTail();
+                shiftSnakeCoords();
+                moveHead(direction);    
+                snake.draw();
+                moveDirection = direction;
+            } else {
+                gameOver();
+            }
+            
+            function getNextSquare(direction) {
+                switch (direction) {
+                    case 39: moveToX = snakeCoordsX[0] + block; moveToY = snakeCoordsY[0]; break;
+                    case 37: moveToX = snakeCoordsX[0] - block; moveToY = snakeCoordsY[0]; break;
+                    case 40: moveToX = snakeCoordsX[0]; moveToY = snakeCoordsY[0] + block; break;
+                    case 38: moveToX = snakeCoordsX[0]; moveToY = snakeCoordsY[0] - block; break;
+                }
+            }
+            function moveHead(direction) {
+                switch (direction) {
+                    case 39: snakeCoordsX[0] += block; break;
+                    case 37: snakeCoordsX[0] -= block; break;
+                    case 40: snakeCoordsY[0] += block; break;
+                    case 38: snakeCoordsY[0] -= block; break;
+                }
             }
             function checkCollide() {
                 //self collide
@@ -127,8 +105,8 @@ window.onload = function() {
                 }
                 //field collide
                 if (
-                    moveToX < 0 | moveToX > (fieldSize-1)*(blockSize+blockSpacer) |
-                    moveToY < 0 | moveToY > (fieldSize-1)*(blockSize+blockSpacer)
+                    moveToX < 0 | moveToX > (fieldSize-1) * block |
+                    moveToY < 0 | moveToY > (fieldSize-1) * block
                    ) {
                     collide = true;
                 }
@@ -143,13 +121,11 @@ window.onload = function() {
                     snakeCoordsX[i] = snakeCoordsX[i-1];
                     snakeCoordsY[i] = snakeCoordsY[i-1];
                 }
-                //console.log(snakeCoordsX.join(', '));
             }
         };
         this.eat = function() {
-            for (var i=0; i<rabbitsPosX.length-1; i++) {
+            for (var i=0; i<rabbitsPosX.length; i++) {
                 if (snakeCoordsX[0] === rabbitsPosX[i] && snakeCoordsY[0] === rabbitsPosY[i]) {
-                    //console.log('collide');
                     snakeCoordsX.push(snakeCoordsX[snakeCoordsX.length-1]);
                     snakeCoordsY.push(snakeCoordsY[snakeCoordsY.length-1]);
                     rabbitsPosX.splice(i,1);
@@ -164,8 +140,8 @@ window.onload = function() {
         this.generate = function() {
             for (var i=0; i<rabbitsNumber; i++) {
                 while (true) {
-                    rabbitsPosX[i] = Math.floor(Math.random() * fieldSize) * (blockSize + blockSpacer);
-                    rabbitsPosY[i] = Math.floor(Math.random() * fieldSize) * (blockSize + blockSpacer);
+                    rabbitsPosX[i] = Math.floor(Math.random() * fieldSize) * block;
+                    rabbitsPosY[i] = Math.floor(Math.random() * fieldSize) * block;
                     if (snakeCoordsX.indexOf(rabbitsPosX[i]) === -1 && snakeCoordsY.indexOf(rabbitsPosY[i]) === -1) {break;}
                 }
             }
@@ -178,16 +154,16 @@ window.onload = function() {
             }
         };
         this.check = function() {
-            if (rabbitsNumber-1 === 0) {
-                //alert("You eat all rabbits! :)");
-                //location.reload();
+            if (rabbitsNumber === 0) {
                 lvl++;
+                tickInterval -= 100 * lvl;
                 document.getElementById("lvl").innerHTML = lvl;
-                rabbitsNumber = startRabbitsNumber*lvl;
+                rabbitsNumber = startRabbitsNumber + lvl;
                 rabbits.generate();
                 rabbits.draw();
             } else {
                 document.getElementById("rabbits_left").innerHTML = rabbitsNumber;
+                rabbits.draw();
             }
         };
     }
