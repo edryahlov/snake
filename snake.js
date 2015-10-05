@@ -17,8 +17,8 @@ window.onload = function() {
     var startRabbitsNumber = 3;
     var rabbitsNumber = startRabbitsNumber;
     var lvl = 1;
-    var moveDirection = 39; //39 - right by start
-    var tickInterval = 200;
+    var moveDirection = 39; //39 - to the right at start
+    var tickInterval = 300;
     
     var snakeCoordsX = [], snakeCoordsY = [];
     var rabbitsPosX = [], rabbitsPosY = [];
@@ -27,7 +27,6 @@ window.onload = function() {
     canvas.width = block * fieldSize;
 
     document.onkeydown = function (event) {
-        //39-37. 40-38
         if (
             (moveDirection != 39 && event.keyCode === 37) |
             (moveDirection != 37 && event.keyCode === 39) |
@@ -38,7 +37,7 @@ window.onload = function() {
         }
     };
     
-    var timer = setInterval(function(){
+    setInterval(function(){
         snake.shift(moveDirection);
         snake.eat();
         rabbits.check();
@@ -56,13 +55,12 @@ window.onload = function() {
         alert("Game Over!");
         location.reload();
     }
-    
-    
+        
     function Snake() {
         this.start = function() {
             for (var i=0; i<snakeLength; i++) {
-                snakeCoordsX[i] = (blockSize+blockSpacer)*(snakeLength-1)-((blockSize+blockSpacer)*i);
-                snakeCoordsY[i] = fieldSize/2*(blockSize+blockSpacer);
+                snakeCoordsX[i] = block * (snakeLength-1) - block * i;
+                snakeCoordsY[i] = fieldSize/2 * block;
             }
         };
         this.draw = function() {
