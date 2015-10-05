@@ -3,7 +3,7 @@
 window.onload = function() {
     "use strict";
     
-    var version = 1.1;
+    var version = 1.2;
     document.getElementById("ver").innerHTML = '(ver. '+ String(version)+')';
     
     var canvas = document.getElementById("game");
@@ -27,7 +27,15 @@ window.onload = function() {
     canvas.width = block * fieldSize;
 
     document.onkeydown = function (event) {
-        moveDirection = event.keyCode;
+        //39-37. 40-38
+        if (
+            (moveDirection != 39 && event.keyCode === 37) |
+            (moveDirection != 37 && event.keyCode === 39) |
+            (moveDirection != 40 && event.keyCode === 38) |
+            (moveDirection != 38 && event.keyCode === 40)
+        ) {
+            moveDirection = event.keyCode;
+        }
     };
     
     var timer = setInterval(function(){
@@ -89,10 +97,10 @@ window.onload = function() {
             }
             function moveHead(direction) {
                 switch (direction) {
-                    case 39: snakeCoordsX[0] += block; break;
-                    case 37: snakeCoordsX[0] -= block; break;
-                    case 40: snakeCoordsY[0] += block; break;
-                    case 38: snakeCoordsY[0] -= block; break;
+                    case 39: snakeCoordsX[0] += block; break; //right
+                    case 37: snakeCoordsX[0] -= block; break; //left
+                    case 40: snakeCoordsY[0] += block; break; //up
+                    case 38: snakeCoordsY[0] -= block; break; //down
                 }
             }
             function checkCollide() {
